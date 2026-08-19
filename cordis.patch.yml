@@ -1,0 +1,44 @@
+# The dsh-dify bundle patch: four rows, one per capability role, applied as
+# ONE insert over whatever composition precedes it.
+#
+# A later layer (your profile's cordis.patch.yml) addresses these rows by id and
+# replaces a row's whole `config` rather than merging into it — so when you
+# override one, restate every key that row needs.
+#
+# Prerequisites:
+# - A running Dify instance (self-hosted or cloud).
+# - DIFY_API_KEY in the credentials store or the launching environment.
+# - DIFY_BASE_URL when the instance is not at https://api.dify.ai/v1.
+# - At least one Dify app (for dify_chat) and one dataset (for dify_retrieve),
+#   named by DIFY_DATASET_ID or by the `datasetId` row config below.
+
+- insert:
+    # ── Service Definition: owns ctx.dify, selects among providers ─────────
+    # `provider` stays unset: with one provider mounted it auto-selects,
+    # and pinning an id would make swapping the provider row a two-row edit.
+    - id: dify
+      name: '@deepseek-ai/dsh-dify'
+
+    # ── Service Provider: the Dify HTTP API ────────────────────────────────
+    # apiKeyEnv defaults to DIFY_API_KEY; baseURL and datasetId fall back to
+    # $DIFY_BASE_URL and $DIFY_DATASET_ID. Never inline `apiKey` here —
+    # use the credentials service or the environment.
+    - id: dify-http
+      name: '@deepseek-ai/dsh-dify/http'
+
+    # ── Consumer: the model-facing dify_chat and dify_retrieve tools ────────
+    - id: tool-dify
+      name: '@deepseek-ai/dsh-dify/tool'
+      config:
+        timeoutMs: 60000
+
+    # ── Consumer: the configuration page ──────────────────────────────────────
+    # Serves http://127.0.0.1:<web port>/dify, editing the `dify-http` and
+    # `tool-dify` settings namespaces plus the API key credential. It injects
+    # `webServer`, so a surface without one (TUI, headless) simply never mounts
+    # it. Loopback only, whatever `dsh web --host` binds. Set `path` to move it;
+    # `disabled: true` in a later layer removes the page entirely.
+    - id: dify-config
+      name: '@deepseek-ai/dsh-dify/config'
+      config:
+        path: /dify
