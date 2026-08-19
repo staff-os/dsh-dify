@@ -36,7 +36,7 @@
 ## 安装
 
 ```sh
-dsh plugin --profile web add "github:deepseek-ai/dsh-dify#main"
+dsh plugin --profile web add "github:staff-os/dsh-dify#main"
 ```
 
 `dsh plugin add` 会把来源原样交给 pnpm，因此任何 pnpm 认识的来源都可以：

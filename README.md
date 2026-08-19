@@ -40,7 +40,7 @@ the backend means replacing one row:
 ## Install
 
 ```sh
-dsh plugin --profile web add "github:deepseek-ai/dsh-dify#main"
+dsh plugin --profile web add "github:staff-os/dsh-dify#main"
 ```
 
 `dsh plugin add` forwards the source to pnpm as-is, so any pnpm-recognized source works:
